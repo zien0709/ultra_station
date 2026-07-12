@@ -22,7 +22,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps: deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }} # 💡 這裡已修正：steps 後面改為點號 "."
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
