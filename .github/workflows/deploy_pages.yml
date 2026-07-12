@@ -1,0 +1,53 @@
+name: Deploy MSIX to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # 如果你的預設分支是 master，請改為 master
+    paths:
+      - 'docs/Portable/Convert_Ultra_v5.6.msix' # 只有當這個檔案更新時才觸發
+  workflow_dispatch: # 允許手動強制觸發
+
+# 設定 GitHub Actions 的權限，允許它寫入 Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps: deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      # 建立一個乾淨的發佈目錄，並把 MSIX 檔案依據目錄結構放進去
+      - name: Prepare Artifacts
+        run: |
+          mkdir -p dist/docs/Portable
+          cp docs/Portable/Convert_Ultra_v5.6.msix dist/docs/Portable/
+          
+          # 可選：在首頁建立一個簡單的 index.html 方便點擊下載
+          # 如果你原本就有網頁內容，請移除下面這段 echo 的指令
+          if [ ! -f dist/index.html ]; then
+            echo '<!DOCTYPE html><html><head><title>Download</title></head><body><h1><a href="docs/Portable/Convert_Ultra_v5.6.msix">Download Convert_Ultra_v5.6.msix</a></h1></body></html>' > dist/index.html
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'dist/'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
