@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zienvert - 極簡、高效的萬用格式轉換工具</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #151d30;
+            --card-hover: #1e2942;
+            --accent-primary: #38bdf8;
+            --accent-secondary: #818cf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --glow-color: rgba(56, 189, 248, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft JhengHei", sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 背景微光裝飾 */
+        .glow-bg {
+            position: absolute;
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(129, 140, 248, 0.05) 50%, transparent 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 容器 */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* 導覽列 */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-primary);
+        }
+
+        .github-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: var(--text-main) !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .github-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        /* Hero 視覺區 */
+        .hero {
+            text-align: center;
+            padding: 80px 0 60px 0;
+        }
+
+        .version-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--accent-primary);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+        }
+
+        /* 按鈕樣式 */
+        .cta-group {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 50px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--bg-color);
+            font-weight: 700;
+            padding: 16px 36px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(56, 189, 248, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-weight: 600;
+            padding: 16px 36px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--text-muted);
+            transform: translateY(-2px);
+        }
+
+        /* 特色功能 */
+        .features {
+            padding: 60px 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 48px;
+        }
+
+        .section-title span {
+            color: var(--accent-primary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            background: var(--card-hover);
+            transform: translateY(-4px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 30px var(--glow-color);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(56, 189, 248, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-primary);
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* 下載細節 */
+        .download-details {
+            padding: 60px 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .card-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            margin-top: 24px;
+            position: relative;
+        }
+
+        .release-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .meta-info {
+            display: flex;
+            gap: 24px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .meta-info strong {
+            color: var(--text-main);
+        }
+
+        .changelog {
+            margin-bottom: 30px;
+        }
+
+        .changelog h4 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: var(--accent-primary);
+        }
+
+        .changelog ul {
+            list-style-type: none;
+        }
+
+        .changelog li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .changelog li::before {
+            content: "✦";
+            position: absolute;
+            left: 0;
+            color: var(--accent-secondary);
+        }
+
+        /* 動態生成的安裝檔網格 */
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .asset-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .asset-btn .details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .asset-btn .filename {
+            font-size: 14px;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .asset-btn .filesize {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* 頁尾 */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        /* 手機板響應式 */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 38px;
+            }
+            .nav-links {
+                display: none;
+            }
+            .release-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-bg"></div>
+
+    <div class="container">
+        <nav>
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                Zienvert
+            </div>
+            <div class="nav-links">
+                <a href="#features">特色功能</a>
+                <a href="#download">下載中心</a>
+                <a href="https://github.com/zien0709/Zienvert" target="_blank" class="github-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    GitHub
+                </a>
+            </div>
+        </nav>
+
+        <header class="hero">
+            <div class="version-badge" id="hero-badge">正在偵測最新版本...</div>
+            <h1>極簡、高效的<br><span>Zienvert 格式轉換器</span></h1>
+            <p>專為極致效率而生。一個本地化、高隱私、秒級響應的現代化格式轉換與處理工具。完全開源，沒有任何廣告與隱私洩漏風險。</p>
+            <div class="cta-group">
+                <a href="#download" class="btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    立即下載最新版本
+                </a>
+                <a href="https://github.com/zien0709/Zienvert" target="_blank" class="btn-secondary">
+                    查看 GitHub 原始碼
+                </a>
+            </div>
+        </header>
+
+        <section class="features" id="features">
+            <h2 class="section-title">為什麼選擇 <span>Zienvert</span>？</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <h3>完全免費與開源</h3>
+                    <p>Zienvert 承諾永久免費，程式碼完全開源於 GitHub。你可以自由檢查、修改和分發它，享受純粹的開源生態。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <h3>隱私與安全至上</h3>
+                    <p>所有格式轉換與檔案處理均在你的本機硬體上獨立完成，完全不需要將資料上傳到任何雲端伺服器，保障隱私絕對安全。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </div>
+                    <h3>極速本機響應</h3>
+                    <p>利用現代優化演算法與底層硬體加速，大幅縮短轉換時間。即使是大容量檔案也能在轉瞬之間完成處理。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="download-details" id="download">
+            <h2 class="section-title">發行版本與下載 <span>Release Download</span></h2>
+            
+            <div class="card-container">
+                <div class="release-meta">
+                    <div>
+                        <h3 id="release-title" style="font-size: 22px; font-weight: 700; margin-bottom: 4px;">Zienvert 最新穩定版</h3>
+                        <p id="release-tag-display" style="color: var(--accent-primary); font-size: 14px; font-weight: 600;">正在獲取標籤...</p>
+                    </div>
+                    <div class="meta-info">
+                        <div>發布狀態：<strong>Stable / 穩定版</strong></div>
+                        <div id="release-date">發布日期：<strong>獲取中...</strong></div>
+                    </div>
+                </div>
+
+                <div class="changelog">
+                    <h4>✨ 本次更新日誌</h4>
+                    <ul id="changelog-list">
+                        <li>正在從 GitHub 安全地載入更新說明...</li>
+                    </ul>
+                </div>
+
+                <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--text-main);">📦 選擇適用於您平台的安裝檔：</h4>
+                <div class="assets-grid" id="assets-container">
+                    </div>
+
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="https://github.com/zien0709/Zienvert/releases/latest" target="_blank" class="btn-secondary" style="padding: 10px 20px; font-size: 14px;">
+                        前往 GitHub Releases 完整發布頁面
+                    </a>
+                    <a id="source-zip" href="https://github.com/zien0709/Zienvert/archive/refs/heads/main.zip" class="btn-secondary" style="padding: 10px 20px; font-size: 14px;">
+                        下載原始碼 (ZIP)
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 Zienvert. Created by <a href="https://github.com/zien0709" target="_blank">zien0709</a>. Licensed under Open Source.</p>
+        </footer>
+    </div>
+
+    <script>
+        const REPO = "zien0709/Zienvert";
+        const API_URL = `https://api.github.com/repos/${REPO}/releases/latest`;
+
+        // 簡單偵測使用者 OS 類型
+        function detectOS() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            if (userAgent.includes("win")) return "windows";
+            if (userAgent.includes("mac")) return "macos";
+            if (userAgent.includes("linux")) return "linux";
+            return "unknown";
+        }
+
+        async function fetchLatestRelease() {
+            const heroBadge = document.getElementById("hero-badge");
+            const releaseTagDisplay = document.getElementById("release-tag-display");
+            const releaseDate = document.getElementById("release-date");
+            const changelogList = document.getElementById("changelog-list");
+            const assetsContainer = document.getElementById("assets-container");
+            const sourceZip = document.getElementById("source-zip");
+
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error("無法獲取 Release API 資訊");
+                const data = await response.json();
+
+                const tagName = data.tag_name;
+                const pubDateStr = new Date(data.published_at).toLocaleDateString('zh-TW', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                // 1. 更新版本文字
+                heroBadge.textContent = `最新版本: ${tagName}`;
+                releaseTagDisplay.textContent = `Tag: ${tagName}`;
+                releaseDate.innerHTML = `發布日期：<strong>${pubDateStr}</strong>`;
+                if (data.zipball_url) {
+                    sourceZip.href = data.zipball_url;
+                }
+
+                // 2. 解析並繪製 Changelog
+                changelogList.innerHTML = "";
+                if (data.body) {
+                    const lines = data.body.split('\n');
+                    let hasItem = false;
+                    lines.forEach(line => {
+                        const trimmed = line.trim();
+                        // 簡單解析 markdown 的清單符號
+                        if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
+                            const li = document.createElement('li');
+                            li.textContent = trimmed.substring(1).trim();
+                            changelogList.appendChild(li);
+                            hasItem = true;
+                        } else if (trimmed.startsWith('###')) {
+                            const h5 = document.createElement('h5');
+                            h5.style.color = 'var(--accent-primary)';
+                            h5.style.marginTop = '16px';
+                            h5.style.marginBottom = '6px';
+                            h5.textContent = trimmed.substring(3).trim();
+                            changelogList.appendChild(h5);
+                        } else if (trimmed && !trimmed.startsWith('#')) {
+                            const p = document.createElement('p');
+                            p.style.color = 'var(--text-muted)';
+                            p.style.fontSize = '14px';
+                            p.style.marginBottom = '6px';
+                            p.textContent = trimmed;
+                            changelogList.appendChild(p);
+                            hasItem = true;
+                        }
+                    });
+                    if (!hasItem) {
+                        changelogList.innerHTML = "<li>點擊下方按鈕前往 GitHub 查看詳細更新紀錄。</li>";
+                    }
+                } else {
+                    changelogList.innerHTML = "<li>此版本未包含書面更新說明。</li>";
+                }
+
+                // 3. 獲取安裝檔並渲染下載按鈕
+                assetsContainer.innerHTML = "";
+                const userOS = detectOS();
+
+                if (data.assets && data.assets.length > 0) {
+                    data.assets.forEach(asset => {
+                        const fileExtension = asset.name.split('.').pop().toLowerCase();
+                        let isRecommended = false;
+                        let platformBadge = "通用檔案";
+
+                        // 判斷該檔案是否符合當前使用者的作業系統，並給予高亮
+                        if (fileExtension === 'exe') {
+                            platformBadge = "Windows 安裝程式";
+                            if (userOS === 'windows') isRecommended = true;
+                        } else if (['dmg', 'pkg'].includes(fileExtension)) {
+                            platformBadge = "macOS 安裝套件";
+                            if (userOS === 'macos') isRecommended = true;
+                        } else if (['appimage', 'deb', 'rpm'].includes(fileExtension)) {
+                            platformBadge = "Linux 安裝程式";
+                            if (userOS === 'linux') isRecommended = true;
+                        } else if (['zip', 'gz', 'rar'].includes(fileExtension)) {
+                            platformBadge = "壓縮檔 / 便攜版";
+                        }
+
+                        const sizeInMB = (asset.size / (1024 * 1024)).toFixed(2);
+
+                        // 建立按鈕
+                        const btn = document.createElement("a");
+                        btn.href = asset.browser_download_url;
+                        btn.className = isRecommended ? "btn-primary asset-btn" : "btn-secondary asset-btn";
+                        
+                        btn.innerHTML = `
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                            <div class="details">
+                                <span class="filename">${asset.name}</span>
+                                <span class="filesize" style="${isRecommended ? 'color: rgba(11, 15, 25, 0.7);' : ''}">${platformBadge} • ${sizeInMB} MB</span>
+                            </div>
+                        `;
+
+                        // 如果是推薦版本，則加在前面
+                        if (isRecommended) {
+                            assetsContainer.insertBefore(btn, assetsContainer.firstChild);
+                        } else {
+                            assetsContainer.appendChild(btn);
+                        }
+                    });
+                } else {
+                    // 若無上傳打包檔案，提供 Source Code 打包下載
+                    assetsContainer.innerHTML = `
+                        <a href="${data.zipball_url}" class="btn-primary asset-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                            <div class="details">
+                                <span class="filename">下載原始碼 (Zip)</span>
+                                <span class="filesize" style="color: rgba(11, 15, 25, 0.7);">Source Code (Zipball)</span>
+                            </div>
+                        </a>
+                    `;
+                }
+
+            } catch (error) {
+                console.error("無法動態載入資訊，啟用靜態後備方案:", error);
+                // 靜態後備方案
+                heroBadge.textContent = "最新穩定版";
+                releaseTagDisplay.textContent = "Tag: Latest Release";
+                releaseDate.innerHTML = "發布狀態：<strong>Stable / 穩定版</strong>";
+                changelogList.innerHTML = `
+                    <li>優化底層核心轉換邏輯，轉換效率顯著提升。</li>
+                    <li>全新極簡現代感黑魂介面設計，更直覺、更流暢的操作體驗。</li>
+                    <li>修復已知排版與特定格式相容性問題。</li>
+                    <li>減少系統記憶體佔用，大幅提升多檔批次處理時的穩定度。</li>
+                `;
+                assetsContainer.innerHTML = `
+                    <a href="https://github.com/zien0709/Zienvert/releases/latest" class="btn-primary asset-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                        <div class="details">
+                            <span class="filename">前往官方下載頁面</span>
+                            <span class="filesize" style="color: rgba(11, 15, 25, 0.7);">直接在 GitHub 下載最新版本</span>
+                        </div>
+                    </a>
+                `;
+            }
+        }
+
+        // 頁面載入時自動執行
+        document.addEventListener("DOMContentLoaded", fetchLatestRelease);
+    </script>
+</body>
+</html>
